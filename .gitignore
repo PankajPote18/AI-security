@@ -1,0 +1,54 @@
+# Secrets / local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*
+secrets*
+service-account*.json
+
+# AI-assistant local instructions and state (never published)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+dist/
+build/
+
+# Datasets are downloaded by scripts and verified by checksum (ml/datasets/checksums.json is tracked)
+ml/datasets/raw/*
+ml/datasets/processed/*
+!ml/datasets/raw/.gitkeep
+!ml/datasets/processed/.gitkeep
+
+# Model artifacts: large binaries are not committed (small champion artifact policy decided in M1.6)
+ml/models/*
+!ml/models/.gitkeep
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Node (Stage 5)
+node_modules/
+frontend/dist/
+
+# Vector store local data (Stage 3)
+.qdrant/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
