@@ -1,7 +1,8 @@
-"""Shared host-name decomposition, used by both dataset grouping (`data/grouping.py`) and
-feature extraction (`features/extraction.py`) so they draw the same registered-domain boundary
-from a single place (hosting-platform suffixes such as `web.app` count as public suffixes, so
-each tenant is its own registered domain). Bundled suffix list: no network access at runtime.
+"""Shared host-name decomposition, used by dataset grouping and feature extraction (`copilot-ml`)
+and by security indicators/DNS/RDAP (`security_core`) so all of them draw the same
+registered-domain boundary from a single place (hosting-platform suffixes such as `web.app`
+count as public suffixes, so each tenant is its own registered domain). Bundled suffix list: no
+network access at runtime.
 """
 
 from __future__ import annotations

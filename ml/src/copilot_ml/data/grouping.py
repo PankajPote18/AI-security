@@ -14,7 +14,7 @@ from urllib.parse import urlsplit
 
 import pandas as pd
 
-from copilot_ml.hostnames import extractor
+from security_core.hostnames import extractor
 
 
 def site_key(url: str) -> str:

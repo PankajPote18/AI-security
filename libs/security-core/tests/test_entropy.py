@@ -1,6 +1,6 @@
 import pytest
 
-from copilot_ml.features.entropy import shannon_entropy
+from security_core.entropy import shannon_entropy
 
 
 def test_empty_string_has_zero_entropy() -> None:

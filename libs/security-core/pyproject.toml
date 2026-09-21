@@ -1,0 +1,17 @@
+[project]
+name = "security-core"
+version = "0.1.0"
+description = "Shared security primitives: URL validation, structural indicators, DNS, RDAP"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "dnspython>=2.6",
+    "httpx>=0.27",
+    "tldextract>=5.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/security_core"]

@@ -1,6 +1,6 @@
 import pytest
 
-from copilot_ml.features.ip_host import IpHostKind, classify_ip_host
+from security_core.ip_host import IpHostKind, classify_ip_host
 
 
 @pytest.mark.parametrize(

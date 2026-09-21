@@ -13,10 +13,10 @@ import string
 from urllib.parse import SplitResult, urlsplit
 
 from copilot_ml.features import schema
-from copilot_ml.features.entropy import shannon_entropy
-from copilot_ml.features.ip_host import IpHostKind, classify_ip_host
 from copilot_ml.features.lexical import brand_names, count_keyword_hits, shortener_domains
-from copilot_ml.hostnames import extractor, public_suffix_extractor
+from security_core.entropy import shannon_entropy
+from security_core.hostnames import extractor, public_suffix_extractor
+from security_core.ip_host import IpHostKind, classify_ip_host
 
 _ALLOWED_URL_CHARS = frozenset(string.ascii_letters + string.digits + "-._~:/?#[]@!$&'()*+,;=%")
 _TOKEN_SPLIT = re.compile(r"[^a-zA-Z0-9]+")
