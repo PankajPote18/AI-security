@@ -9,6 +9,8 @@ permissions:
   contents: read
 
 jobs:
+  # ml + security-core: pure Python, no external services. Runs on both OSes, matching the
+  # project's "must work natively on Windows, no Docker" requirement.
   checks:
     name: lint, types, tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -25,7 +27,47 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
-      - run: uv run pytest
+      - run: uv run pytest ml/tests libs/security-core/tests
+
+  # backend: needs Postgres and a trained model artifact, so it gets its own job (Linux only,
+  # to keep CI time reasonable) with a real Postgres service container. This is CI
+  # infrastructure, not something a contributor needs installed locally, and does not
+  # contradict "no Docker requirement for local development".
+  backend-checks:
+    name: backend tests (ubuntu-latest)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: copilot
+          POSTGRES_PASSWORD: copilot
+          POSTGRES_DB: copilot_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+asyncpg://copilot:copilot@localhost:5432/copilot_test
+      TEST_DATABASE_URL: postgresql+asyncpg://copilot:copilot@localhost:5432/copilot_test
+      JWT_SECRET_KEY: ci-only-throwaway-secret-never-used-outside-this-workflow
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.1.0
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Build the dataset and train a real model (needed by backend tests)
+        run: |
+          uv run copilot-ml data build
+          uv run copilot-ml train
+      - name: Apply migrations
+        working-directory: backend
+        run: uv run alembic upgrade head
+      - run: uv run pytest backend/tests
 
   secrets-scan:
     name: secret scan
