@@ -1,0 +1,31 @@
+# Frequently-impersonated brand names, one per line, lowercase, no spaces. Used only to flag a
+# brand token appearing in a subdomain of a DIFFERENT registered domain (classic lookalike
+# pattern, e.g. paypal.com.verify-login.example.net) - not to recognise the real brand.
+paypal
+apple
+microsoft
+google
+amazon
+facebook
+instagram
+whatsapp
+netflix
+bankofamerica
+wellsfargo
+chase
+citibank
+hsbc
+americanexpress
+dhl
+fedex
+ups
+outlook
+office365
+linkedin
+ebay
+adobe
+dropbox
+icloud
+coinbase
+binance
+steam

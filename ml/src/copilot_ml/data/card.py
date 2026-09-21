@@ -6,16 +6,8 @@ from datetime import date
 
 from copilot_ml.data.audit import COMPOSITE_NAME
 from copilot_ml.data.summary import DatasetSummary
-
-
-def _pct(value: float) -> str:
-    return f"{value * 100:.2f}%"
-
-
-def _table(header: list[str], rows: list[list[str]]) -> str:
-    lines = ["| " + " | ".join(header) + " |", "|" + "|".join("---" for _ in header) + "|"]
-    lines += ["| " + " | ".join(row) + " |" for row in rows]
-    return "\n".join(lines)
+from copilot_ml.reporting import format_percent as _pct
+from copilot_ml.reporting import render_table as _table
 
 
 def _source_section(summary: DatasetSummary) -> str:

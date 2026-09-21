@@ -4,11 +4,15 @@ version = "0.1.0"
 description = "Phishing URL dataset, feature engineering, training, evaluation and inference"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+    "matplotlib>=3.8",
     "numpy",
     "pandas>=2.2",
     "pyarrow",
+    "scikit-learn>=1.5",
+    "shap>=0.45",
     "tldextract>=5.3",
     "typer>=0.12",
+    "xgboost>=2.0",
 ]
 
 [project.scripts]

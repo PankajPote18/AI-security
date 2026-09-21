@@ -13,16 +13,15 @@ from __future__ import annotations
 from urllib.parse import urlsplit
 
 import pandas as pd
-from tldextract import TLDExtract
 
-_EXTRACTOR = TLDExtract(suffix_list_urls=(), cache_dir=None, include_psl_private_domains=True)
+from copilot_ml.hostnames import extractor
 
 
 def site_key(url: str) -> str:
     host = urlsplit(url).hostname
     if not host:
         return url
-    return _EXTRACTOR(host).top_domain_under_public_suffix or host
+    return extractor(host).top_domain_under_public_suffix or host
 
 
 def add_site_column(frame: pd.DataFrame) -> pd.DataFrame:

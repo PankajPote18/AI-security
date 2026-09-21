@@ -10,6 +10,7 @@ dependencies = ["copilot-ml"]
 
 [dependency-groups]
 dev = [
+    "hypothesis>=6.100",
     "mypy>=1.10",
     "pandas-stubs",
     "pytest>=8",

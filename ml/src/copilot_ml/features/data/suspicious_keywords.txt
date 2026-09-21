@@ -1,0 +1,30 @@
+# Tokens commonly used in credential-phishing URLs to create urgency or impersonate a login/
+# payment flow. One per line; matched as case-insensitive substrings against host and path text.
+login
+signin
+verify
+verification
+secure
+security
+account
+update
+confirm
+banking
+webscr
+password
+wallet
+invoice
+suspend
+suspended
+unlock
+alert
+urgent
+support
+billing
+payment
+recover
+restore
+reactivate
+authenticate
+credential
+authorize

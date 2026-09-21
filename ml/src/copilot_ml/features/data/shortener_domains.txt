@@ -1,0 +1,28 @@
+# Known URL-shortener registered domains, one per line. Lines starting with # are comments.
+# Shorteners are a phishing enabler (they hide the real destination), not proof of phishing.
+bit.ly
+tinyurl.com
+goo.gl
+t.co
+ow.ly
+is.gd
+buff.ly
+rebrand.ly
+cutt.ly
+tiny.cc
+shorte.st
+adf.ly
+bl.ink
+rb.gy
+s.id
+v.gd
+lnkd.in
+soo.gd
+clck.ru
+shorturl.at
+tr.im
+qr.ae
+x.co
+tiny.pl
+u.to
+1url.com
