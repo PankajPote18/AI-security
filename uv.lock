@@ -1060,6 +1060,7 @@ source = { editable = "libs/security-core" }
 dependencies = [
     { name = "dnspython" },
     { name = "httpx" },
+    { name = "idna" },
     { name = "tldextract" },
 ]
 
@@ -1067,6 +1068,7 @@ dependencies = [
 requires-dist = [
     { name = "dnspython", specifier = ">=2.6" },
     { name = "httpx", specifier = ">=0.27" },
+    { name = "idna", specifier = ">=3.6" },
     { name = "tldextract", specifier = ">=5.3" },
 ]
 
