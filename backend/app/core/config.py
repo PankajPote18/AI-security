@@ -29,8 +29,14 @@ class Settings(BaseSettings):
     cors_allowed_origins: str = "http://localhost:5173"
 
     ml_model_dir: Path = _REPO_ROOT / "ml" / "models"
+    knowledge_base_dir: Path = _REPO_ROOT / "knowledge-base"
 
     rate_limit_analyze: str = "20/minute"
+
+    # LLM (Stage 3): optional. Report generation degrades to report=null when unset, rather than
+    # the app failing to start - see llm/client.py.
+    hf_token: SecretStr | None = None
+    hf_model: str = "openai/gpt-oss-20b"
 
     @property
     def cors_origins(self) -> list[str]:

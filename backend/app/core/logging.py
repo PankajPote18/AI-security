@@ -21,7 +21,10 @@ def configure_logging(level: int = logging.INFO) -> None:
     logging.basicConfig(
         level=level, format="%(asctime)s %(levelname)-8s %(name)s [%(request_id)s] %(message)s"
     )
-    logging.getLogger().addFilter(_DefaultRequestIdFilter())
+    # A filter on a logger only runs for records that logger originates, not ones a child
+    # logger propagates up to it - so this must sit on the handler, which sees every record.
+    for handler in logging.getLogger().handlers:
+        handler.addFilter(_DefaultRequestIdFilter())
 
 
 class _DefaultRequestIdFilter(logging.Filter):

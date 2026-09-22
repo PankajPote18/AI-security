@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -17,12 +18,26 @@ from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import RequestIdMiddleware, configure_logging
 from app.core.rate_limit import limiter
-from app.services import ml_service
+from app.services import knowledge_service, ml_service
+
+logger = logging.getLogger("app.startup")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    ml_service.preload()  # fail fast at startup rather than on the first request
+    del app  # unused: the app instance itself needs no setup here
+    ml_service.preload()  # fail fast at startup: the ML model is required for /analyze/url
+
+    try:
+        # The knowledge base is Stage 3 enrichment (report generation); its absence must not
+        # prevent the rest of the API from starting.
+        result = knowledge_service.reingest()
+        logger.info("Knowledge base indexed: %s", result)
+    except Exception:
+        logger.exception(
+            "Knowledge base ingestion failed at startup; report generation will degrade"
+        )
+
     yield
 
 

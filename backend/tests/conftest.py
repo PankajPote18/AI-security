@@ -38,7 +38,15 @@ _test_engine = create_async_engine(_settings.test_database_url, poolclass=NullPo
 _TestSessionFactory = async_sessionmaker(_test_engine, expire_on_commit=False)
 
 # Child tables first, so foreign keys never block a delete.
-_TABLES_IN_DELETE_ORDER = ("feedback", "predictions", "analyses", "domains", "urls", "users")
+_TABLES_IN_DELETE_ORDER = (
+    "feedback",
+    "security_reports",
+    "predictions",
+    "analyses",
+    "domains",
+    "urls",
+    "users",
+)
 
 
 @pytest_asyncio.fixture(autouse=True)

@@ -22,6 +22,7 @@ def ingest(directory: Path = _DEFAULT_KB_DIR) -> None:
     result = ingest_directory(client, directory)
     typer.echo(
         f"documents={result.documents} chunks={result.chunks} "
+        f"embedded_chunks={result.embedded_chunks} "
         f"deleted_stale_chunks={result.deleted_stale_chunks}"
     )
 

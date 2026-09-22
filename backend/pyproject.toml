@@ -9,9 +9,11 @@ dependencies = [
     "copilot-ml",
     "email-validator>=2.2",
     "fastapi>=0.115",
+    "langchain-openai>=0.2",
     "pwdlib[argon2]>=0.2",
     "pydantic-settings>=2.5",
     "pyjwt>=2.9",
+    "rag-core",
     "security-core",
     "slowapi>=0.1.9",
     "sqlalchemy[asyncio]>=2.0",
@@ -28,3 +30,4 @@ packages = ["app"]
 [tool.uv.sources]
 copilot-ml = { workspace = true }
 security-core = { workspace = true }
+rag-core = { workspace = true }

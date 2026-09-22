@@ -16,8 +16,10 @@ from app.schemas.analysis import (
     FeedbackOut,
     FeedbackRequest,
 )
-from app.services import analysis_service
+from app.schemas.report import SecurityReportOut
+from app.services import analysis_service, report_service
 from app.services.analysis_service import AnalysisNotFoundError
+from app.services.report_service import AnalysisNotCompleteError
 
 router = APIRouter(tags=["analyses"])
 
@@ -84,3 +86,28 @@ async def submit_feedback(
     )
     await db.commit()
     return FeedbackOut.model_validate(row)
+
+
+@router.post("/analyses/{analysis_id}/report", response_model=SecurityReportOut)
+async def generate_report(
+    analysis_id: uuid.UUID, user: CurrentUser, db: DbSession
+) -> SecurityReportOut:
+    try:
+        return await report_service.generate_report(db, analysis_id=analysis_id, user_id=user.id)
+    except AnalysisNotFoundError as error:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Analysis not found") from error
+    except AnalysisNotCompleteError as error:
+        raise HTTPException(status.HTTP_409_CONFLICT, str(error)) from error
+
+
+@router.get("/analyses/{analysis_id}/report", response_model=SecurityReportOut)
+async def get_report(analysis_id: uuid.UUID, user: CurrentUser, db: DbSession) -> SecurityReportOut:
+    try:
+        report = await report_service.get_report(db, analysis_id=analysis_id, user_id=user.id)
+    except AnalysisNotFoundError as error:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Analysis not found") from error
+    if report is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, "No report has been generated for this analysis yet"
+        )
+    return report

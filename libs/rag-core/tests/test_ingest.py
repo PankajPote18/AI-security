@@ -53,6 +53,7 @@ def test_ingest_indexes_every_document(qdrant_client: QdrantClient, tmp_path: Pa
 
     assert result.documents == 2
     assert result.chunks > 0
+    assert result.embedded_chunks == result.chunks  # everything is new on first ingest
     assert result.deleted_stale_chunks == 0
     assert qdrant_client.count(DEFAULT_COLLECTION).count == result.chunks
 
@@ -70,15 +71,18 @@ def test_ingested_content_is_retrievable(qdrant_client: QdrantClient, tmp_path: 
     )
 
 
-def test_reingesting_unchanged_directory_is_a_no_op(
+def test_reingesting_unchanged_directory_embeds_nothing(
     qdrant_client: QdrantClient, tmp_path: Path
 ) -> None:
+    # Regression: this used to re-embed every chunk on every call regardless of whether its
+    # content had changed, making a startup-time reingest take ~40s instead of being near-free.
     kb = tmp_path / "kb"
     _write_kb(kb, {"phishing.md": _DOC_A, "dns.md": _DOC_B})
     first = ingest_directory(qdrant_client, kb)
     second = ingest_directory(qdrant_client, kb)
 
     assert second.chunks == first.chunks
+    assert second.embedded_chunks == 0
     assert second.deleted_stale_chunks == 0
     assert qdrant_client.count(DEFAULT_COLLECTION).count == first.chunks
 
@@ -96,6 +100,7 @@ def test_editing_a_document_replaces_its_stale_chunks(
     _write_kb(kb, {"phishing.md": edited})
     result = ingest_directory(qdrant_client, kb)
 
+    assert result.embedded_chunks >= 1
     assert result.deleted_stale_chunks >= 1
     retrieved = retrieve(qdrant_client, "urgency language phishing", top_k=1)
     assert "urgency" in retrieved.chunks[0].text
