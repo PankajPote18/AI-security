@@ -1,0 +1,104 @@
+# Labelled retrieval evaluation set: each query names the doc_id(s) that should appear in the
+# top results. `expected_doc_ids` is a list because a couple of queries are legitimately answered
+# by more than one document - hit@k counts a hit if ANY expected id appears in the top k.
+#
+# doc_id is the knowledge-base file's path relative to knowledge-base/, without the .md
+# extension (exactly what rag_core.loaders.KnowledgeDocument.doc_id produces).
+
+- query: "why do attackers impersonate trusted brands in phishing"
+  expected_doc_ids: ["phishing/phishing-overview"]
+- query: "what makes phishing psychologically effective"
+  expected_doc_ids: ["phishing/phishing-overview", "social-engineering/social-engineering-overview"]
+- query: "how does a fake login page steal a password"
+  expected_doc_ids: ["phishing/credential-harvesting"]
+- query: "reverse proxy phishing kit that steals session cookies during MFA"
+  expected_doc_ids: ["phishing/credential-harvesting", "mitre/t1557-adversary-in-the-middle"]
+- query: "business email compromise wire transfer fraud"
+  expected_doc_ids: ["phishing/business-email-compromise"]
+- query: "attacker impersonating a CEO asking for a wire transfer"
+  expected_doc_ids: ["phishing/business-email-compromise"]
+
+- query: "psychological manipulation levers used in social engineering"
+  expected_doc_ids: ["social-engineering/social-engineering-overview"]
+- query: "vishing smishing quishing QR code phishing"
+  expected_doc_ids: ["social-engineering/social-engineering-overview"]
+- query: "why urgency language is used in phishing messages"
+  expected_doc_ids: ["social-engineering/pretexting-and-urgency"]
+- query: "what is pretexting in a social engineering attack"
+  expected_doc_ids: ["social-engineering/pretexting-and-urgency"]
+
+- query: "what does an MX DNS record do"
+  expected_doc_ids: ["dns/dns-overview"]
+- query: "what does NXDOMAIN mean for a domain lookup"
+  expected_doc_ids: ["dns/dns-overview"]
+- query: "why is domain registration age useful for detecting phishing"
+  expected_doc_ids: ["dns/domain-age-and-rdap"]
+- query: "what is RDAP and how does it replace WHOIS"
+  expected_doc_ids: ["dns/domain-age-and-rdap"]
+- query: "how do SPF DKIM and DMARC prevent email spoofing"
+  expected_doc_ids: ["dns/email-authentication-spf-dkim-dmarc"]
+- query: "what is a DMARC reject policy"
+  expected_doc_ids: ["dns/email-authentication-spf-dkim-dmarc"]
+
+- query: "does HTTPS prove a website is safe"
+  expected_doc_ids: ["http/https-tls-overview"]
+- query: "why is plain HTTP on a login page suspicious"
+  expected_doc_ids: ["http/https-tls-overview"]
+- query: "what is the Strict-Transport-Security header for"
+  expected_doc_ids: ["http/security-headers"]
+- query: "content security policy header purpose"
+  expected_doc_ids: ["http/security-headers"]
+
+- query: "why are hardware security keys phishing resistant"
+  expected_doc_ids: ["authentication/authentication-fundamentals"]
+- query: "factors of authentication something you know have are"
+  expected_doc_ids: ["authentication/authentication-fundamentals"]
+
+- query: "attacker abusing a trusted domain's redirect endpoint"
+  expected_doc_ids: ["owasp/open-redirects"]
+- query: "what is an open redirect vulnerability"
+  expected_doc_ids: ["owasp/open-redirects"]
+
+- query: "MITRE ATT&CK technique for phishing initial access"
+  expected_doc_ids: ["mitre/t1566-phishing"]
+- query: "T1566 spearphishing attachment vs link"
+  expected_doc_ids: ["mitre/t1566-phishing"]
+- query: "T1566.002 spearphishing link technique"
+  expected_doc_ids: ["mitre/t1566-002-spearphishing-link"]
+- query: "phishing for information reconnaissance technique"
+  expected_doc_ids: ["mitre/t1598-phishing-for-information"]
+- query: "T1598 MITRE ATT&CK"
+  expected_doc_ids: ["mitre/t1598-phishing-for-information"]
+- query: "user execution malicious link technique T1204"
+  expected_doc_ids: ["mitre/t1204-001-malicious-link"]
+- query: "what does T1583.001 acquire infrastructure domains mean"
+  expected_doc_ids: ["mitre/t1583-001-acquire-infrastructure-domains"]
+- query: "adversary in the middle credential theft technique"
+  expected_doc_ids: ["mitre/t1557-adversary-in-the-middle"]
+- query: "steal web session cookie MITRE technique T1539"
+  expected_doc_ids: ["mitre/t1539-steal-web-session-cookie"]
+- query: "obfuscated files or information defense evasion technique"
+  expected_doc_ids: ["mitre/t1027-obfuscated-files-or-information"]
+- query: "domain generation algorithm malware command and control"
+  expected_doc_ids: ["mitre/t1568-002-domain-generation-algorithms"]
+
+- query: "why is a raw IP address as a URL host suspicious"
+  expected_doc_ids: ["url-indicators/ip-address-hosts"]
+- query: "decimal hex octal encoded IP address in a URL"
+  expected_doc_ids: ["url-indicators/ip-address-hosts"]
+- query: "punycode homograph attack lookalike domain unicode"
+  expected_doc_ids: ["url-indicators/punycode-and-homograph-attacks"]
+- query: "why do URL shorteners hide the real destination"
+  expected_doc_ids: ["url-indicators/url-shorteners"]
+- query: "typosquatting combosquatting brand lookalike domain"
+  expected_doc_ids: ["url-indicators/typosquatting-and-brand-lookalikes"]
+- query: "brand name in a subdomain of an unrelated domain"
+  expected_doc_ids: ["url-indicators/typosquatting-and-brand-lookalikes"]
+- query: "the @ symbol trick to disguise a URL's real destination"
+  expected_doc_ids: ["url-indicators/userinfo-at-symbol-trick"]
+- query: "userinfo before the host in a URL authority"
+  expected_doc_ids: ["url-indicators/userinfo-at-symbol-trick"]
+- query: "login verify secure keywords inside a domain name"
+  expected_doc_ids: ["url-indicators/credential-keywords-in-domains"]
+- query: "shannon entropy random looking hostname signal"
+  expected_doc_ids: ["url-indicators/entropy-as-a-signal"]
