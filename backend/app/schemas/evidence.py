@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class FeatureContributionOut(BaseModel):
@@ -47,3 +47,12 @@ class DomainInfoOut(BaseModel):
     domain_age_days: int | None = None
     rdap_found: bool = False
     degraded: bool = False
+
+
+class ThreatIntelOut(BaseModel):
+    provider: str
+    status: str  # "listed" | "not_listed" | "unavailable"
+    threat_type: str | None = None
+    tags: list[str] = Field(default_factory=list)
+    reference_url: str | None = None
+    error: str | None = None

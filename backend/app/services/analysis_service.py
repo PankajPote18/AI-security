@@ -15,9 +15,11 @@ from datetime import UTC, datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.analysis import Analysis
+from app.models.threat_intel import ThreatIntelLookup
 from app.repositories import analyses as analyses_repo
 from app.repositories import domains as domains_repo
 from app.repositories import predictions as predictions_repo
+from app.repositories import threat_intel as threat_intel_repo
 from app.repositories import urls as urls_repo
 from app.schemas.analysis import AnalysisOut, AnalysisStepOut
 from app.schemas.evidence import (
@@ -26,8 +28,10 @@ from app.schemas.evidence import (
     FeatureContributionOut,
     IndicatorOut,
     MlAnalysisOut,
+    ThreatIntelOut,
 )
 from app.services import ml_service, scoring_service, security_analysis_service
+from security_core.threat_intel import ThreatIntelResult
 from security_core.url_validation import InvalidUrlError, validate_and_normalize
 
 
@@ -70,7 +74,9 @@ async def run_analysis(db: AsyncSession, *, user_id: uuid.UUID, raw_url: str) ->
 
     async def timed_security() -> security_analysis_service.SecurityAnalysisResult:
         start = time.perf_counter()
-        result = await security_analysis_service.analyze(db, normalized.normalized, normalized.host)
+        result = await security_analysis_service.analyze(
+            db, normalized.normalized, normalized.host, url_row.id
+        )
         steps.append(
             AnalysisStepOut(
                 step="security_analysis", status="done", ms=(time.perf_counter() - start) * 1000
@@ -140,8 +146,11 @@ async def run_analysis(db: AsyncSession, *, user_id: uuid.UUID, raw_url: str) ->
         degraded=security_result.degraded,
     )
     indicators = [IndicatorOut(**asdict(i)) for i in security_result.indicators]
+    threat_intelligence = [_ti_to_out(t) for t in security_result.threat_intel]
 
-    return _to_out(analysis_row, url_row.normalized, ml_analysis, indicators, domain_info)
+    return _to_out(
+        analysis_row, url_row.normalized, ml_analysis, indicators, domain_info, threat_intelligence
+    )
 
 
 async def get_analysis(
@@ -188,7 +197,39 @@ async def get_analysis(
                 degraded=analysis_row.degraded,
             )
 
-    return _to_out(analysis_row, analysis_row.url.normalized, ml_analysis, indicators, domain_info)
+    threat_intel_rows = await threat_intel_repo.list_by_url(db, analysis_row.url_id)
+    threat_intelligence = [_ti_row_to_out(t) for t in threat_intel_rows]
+
+    return _to_out(
+        analysis_row,
+        analysis_row.url.normalized,
+        ml_analysis,
+        indicators,
+        domain_info,
+        threat_intelligence,
+    )
+
+
+def _ti_to_out(result: ThreatIntelResult) -> ThreatIntelOut:
+    return ThreatIntelOut(
+        provider=result.provider,
+        status=result.status,
+        threat_type=result.threat_type,
+        tags=result.tags,
+        reference_url=result.reference_url,
+        error=result.error,
+    )
+
+
+def _ti_row_to_out(row: ThreatIntelLookup) -> ThreatIntelOut:
+    return ThreatIntelOut(
+        provider=row.provider,
+        status=row.status,
+        threat_type=row.threat_type,
+        tags=row.tags,
+        reference_url=row.reference_url,
+        error=row.error,
+    )
 
 
 def _to_out(
@@ -197,6 +238,7 @@ def _to_out(
     ml_analysis: MlAnalysisOut | None,
     indicators: list[IndicatorOut],
     domain_info: DomainInfoOut | None,
+    threat_intelligence: list[ThreatIntelOut] | None = None,
 ) -> AnalysisOut:
     return AnalysisOut(
         id=analysis_row.id,
@@ -212,6 +254,7 @@ def _to_out(
         ml_analysis=ml_analysis,
         indicators=indicators,
         domain_info=domain_info,
+        threat_intelligence=threat_intelligence or [],
         created_at=analysis_row.created_at,
         completed_at=analysis_row.completed_at,
     )

@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     hf_token: SecretStr | None = None
     hf_model: str = "openai/gpt-oss-20b"
 
+    # Threat intelligence (Stage 4): optional. Degrades to status="unavailable" when unset - see
+    # security_analysis_service.py.
+    urlhaus_auth_key: SecretStr | None = None
+
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.cors_allowed_origins.split(",") if origin.strip()]

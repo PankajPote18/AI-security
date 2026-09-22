@@ -14,6 +14,7 @@ from collections.abc import AsyncIterator
 import pytest
 import pytest_asyncio
 from app.core.config import get_settings
+from app.core.rate_limit import limiter
 from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
 from app.main import create_app
@@ -45,6 +46,7 @@ _TABLES_IN_DELETE_ORDER = (
     "predictions",
     "analyses",
     "domains",
+    "threat_intel_lookups",
     "urls",
     "users",
 )
@@ -56,6 +58,14 @@ def _ensure_knowledge_base_indexed() -> None:
     # base is not auto-ingested on startup - tests must not rely on it having been ingested by
     # some earlier local run (that state doesn't exist in a fresh CI checkout).
     knowledge_service.reingest()
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limiter() -> None:
+    # `limiter` is a module-level singleton `create_app()` reuses on every call, so its in-memory
+    # hit counts (keyed by client IP - the same "testclient" address for every test) would
+    # otherwise accumulate across the whole session and eventually 429 an unrelated test.
+    limiter.reset()
 
 
 @pytest_asyncio.fixture(autouse=True)

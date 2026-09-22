@@ -5,7 +5,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.evidence import DomainInfoOut, IndicatorOut, MlAnalysisOut
+from app.schemas.evidence import DomainInfoOut, IndicatorOut, MlAnalysisOut, ThreatIntelOut
 
 
 class AnalyzeRequest(BaseModel):
@@ -55,7 +55,7 @@ class AnalysisOut(BaseModel):
     ml_analysis: MlAnalysisOut | None
     indicators: list[IndicatorOut]
     domain_info: DomainInfoOut | None
-    threat_intelligence: list[dict] | None = None  # Stage 4
+    threat_intelligence: list[ThreatIntelOut] = []
     ai_explanation: str | None = None  # Stage 3
     sources: list[dict] | None = None  # Stage 3
 
