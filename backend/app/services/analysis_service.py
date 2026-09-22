@@ -30,7 +30,8 @@ from app.schemas.evidence import (
     MlAnalysisOut,
     ThreatIntelOut,
 )
-from app.services import ml_service, scoring_service, security_analysis_service
+from app.services import ml_service, security_analysis_service
+from security_core import scoring as scoring_service
 from security_core.threat_intel import ThreatIntelResult
 from security_core.url_validation import InvalidUrlError, validate_and_normalize
 

@@ -1,6 +1,10 @@
 """Deterministic risk scoring: the ML probability and indicator severities are combined by a
 fixed, unit-tested formula, never by an LLM. Stage 3's LLM explains this score; it cannot change
 it - that contract is what makes the score defensible.
+
+Lives in security-core (not the backend) because the Stage 4 MCP server's `analyze_url` tool
+needs the exact same policy the backend uses - one formula, shared, not two implementations that
+could drift apart.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 import pytest
-from app.services.scoring_service import HIGH_THRESHOLD, LOW_THRESHOLD, score
 
 from security_core.indicators import Indicator
+from security_core.scoring import HIGH_THRESHOLD, LOW_THRESHOLD, score
 
 
 def _indicator(severity: str) -> Indicator:

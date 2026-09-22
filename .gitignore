@@ -46,6 +46,7 @@ frontend/dist/
 
 # Vector store local data (Stage 3)
 .qdrant/
+.qdrant-mcp/
 
 # OS / editor
 .DS_Store
