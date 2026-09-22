@@ -9,8 +9,10 @@ permissions:
   contents: read
 
 jobs:
-  # ml + security-core: pure Python, no external services. Runs on both OSes, matching the
-  # project's "must work natively on Windows, no Docker" requirement.
+  # ml + security-core + rag-core: pure Python, no external services (rag-core's vector store
+  # runs in local/in-memory Qdrant mode, and its embedding models download from Hugging Face on
+  # first use, cached for the rest of the job). Runs on both OSes, matching the project's "must
+  # work natively on Windows, no Docker" requirement.
   checks:
     name: lint, types, tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -27,7 +29,7 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
-      - run: uv run pytest ml/tests libs/security-core/tests
+      - run: uv run pytest ml/tests libs/security-core/tests libs/rag-core/tests evals/rag
 
   # backend: needs Postgres and a trained model artifact, so it gets its own job (Linux only,
   # to keep CI time reasonable) with a real Postgres service container. This is CI
