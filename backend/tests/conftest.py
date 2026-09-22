@@ -18,6 +18,7 @@ from app.core.security import create_access_token, hash_password
 from app.db.session import get_db
 from app.main import create_app
 from app.models.user import User
+from app.services import knowledge_service
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -47,6 +48,14 @@ _TABLES_IN_DELETE_ORDER = (
     "urls",
     "users",
 )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _ensure_knowledge_base_indexed() -> None:
+    # httpx's ASGITransport never runs the app's lifespan, so unlike production the knowledge
+    # base is not auto-ingested on startup - tests must not rely on it having been ingested by
+    # some earlier local run (that state doesn't exist in a fresh CI checkout).
+    knowledge_service.reingest()
 
 
 @pytest_asyncio.fixture(autouse=True)
