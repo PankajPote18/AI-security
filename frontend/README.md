@@ -1,32 +1,28 @@
-# React + TypeScript + Vite
+# AI Security Copilot - dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + TypeScript + Vite + Tailwind v4 + shadcn/ui frontend for
+[AI Security Copilot](../README.md). See the root README and
+[`docs/local-development.md`](../docs/local-development.md) for how this fits into the rest of
+the project, and [`docs/deployment.md`](../docs/deployment.md) for deploying the built output.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # http://localhost:5173, proxies /api to http://127.0.0.1:8000 (start the backend first)
+npm run build    # → dist/, served as static files in production (see docs/deployment.md)
+npm run lint     # oxlint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Layout
+
+```
+src/api/          hand-written fetch client + types mirroring backend/app/schemas/*.py
+src/auth/         token storage (localStorage) + the RequireAuth route guard
+src/pages/        one component per route (login, analyze, analysis detail, history)
+src/components/dashboard/   the analysis-report building blocks (risk summary, SHAP chart,
+                             indicators, domain info, threat intel, AI explanation, feedback)
+src/components/ui/          shadcn/ui components - generated, then owned and edited directly
+```
+
+The API client is intentionally hand-written rather than generated from the backend's OpenAPI
+schema (`openapi-typescript` is a Should-tier addition the project plan calls out and defers), so
+the frontend has no build-time dependency on a running backend.

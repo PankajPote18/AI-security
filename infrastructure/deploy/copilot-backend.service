@@ -1,0 +1,37 @@
+# systemd unit for the FastAPI backend. Install as /etc/systemd/system/copilot-backend.service,
+# then: systemctl daemon-reload && systemctl enable --now copilot-backend
+#
+# Replace every <PLACEHOLDER> for your deployment. See docs/deployment.md for the full walkthrough.
+
+[Unit]
+Description=AI Security Copilot backend (FastAPI/uvicorn)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=<DEPLOY_USER>
+Group=<DEPLOY_USER>
+WorkingDirectory=<REPO_PATH>/backend
+# EnvironmentFile holds DATABASE_URL, JWT_SECRET_KEY, HF_TOKEN, URLHAUS_AUTH_KEY etc; keep it
+# outside the repo, mode 600, owned by DEPLOY_USER - never commit it (see .env.example).
+EnvironmentFile=<REPO_PATH>/.env
+# --workers 1: the rate limiter and Qdrant's local-mode index are both single-process (see
+# infrastructure/deploy/README's note and the plan's "Redis: Optional" decision) - a second
+# worker would either double-count nothing (its own separate rate-limit state) or crash on
+# startup (Qdrant local mode allows one process per storage path). Scale out with a second VPS
+# behind a load balancer, not more workers on one, until that constraint is revisited.
+ExecStart=<REPO_PATH>/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=on-failure
+RestartSec=5
+
+# Hardening: the backend needs to read the repo (model artifact, knowledge base) and write to
+# its own Qdrant/log paths, and reach the network (Postgres, HF, RDAP, DNS, URLhaus) - nothing else.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=<REPO_PATH>
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

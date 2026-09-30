@@ -71,6 +71,23 @@ jobs:
         run: uv run alembic upgrade head
       - run: uv run pytest backend/tests mcp-server/tests
 
+  frontend-checks:
+    name: frontend lint + build (ubuntu-latest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
   secrets-scan:
     name: secret scan
     runs-on: ubuntu-latest
