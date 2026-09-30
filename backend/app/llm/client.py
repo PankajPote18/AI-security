@@ -7,11 +7,15 @@ endpoint speaks the same OpenAI chat-completions wire format `ChatOpenAI` alread
 Swapping providers later (Anthropic, OpenAI directly) means changing only this function; every
 caller (`report_service`, Stage 4's agent) depends on `BaseChatModel`, not on this provider.
 
-Model: `openai/gpt-oss-20b` by default (override via `HF_MODEL`) - chosen for native structured-
-output/tool-calling support (purpose-built for it, unlike most instruction-tuned models bolting
-JSON mode on afterwards), Apache 2.0 licensing, and low cost from its mixture-of-experts design
-(21B total / 3.6B active parameters). `openai/gpt-oss-120b` is a stronger, pricier option if
-`gpt-oss-20b`'s report quality proves insufficient - one environment variable to switch.
+Model: `openai/gpt-oss-120b` by default (override via `HF_MODEL`) - Apache 2.0, native
+structured-output/tool-calling support. `openai/gpt-oss-20b` is the smaller, cheaper sibling and
+works fine for Stage 3's single-shot report generation, but live-testing Stage 4's multi-round
+agent loop against it through Hugging Face's router surfaced a real reliability bug: it
+intermittently (well over half the time, across dozens of live runs) emits a tool call the
+router's own parser rejects with a bare `output_parse_failed` and no other detail - not a prompt
+issue, since `run_deep_analysis` retries a fresh attempt on any failure and the retry hits the
+same wall. `gpt-oss-120b` produced zero such failures across the same test URLs. Swap back to
+`20b` only for standard-mode-only deployments that never enable `mode=deep`.
 """
 
 from __future__ import annotations

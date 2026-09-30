@@ -12,6 +12,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from app.core.config import get_settings
+from app.llm.client import get_chat_model
 from app.llm.schemas import IndicatorExplanation, SecurityReportLLMOutput
 from httpx import AsyncClient
 
@@ -60,9 +61,11 @@ def _mock_chat_model(request: pytest.FixtureRequest) -> AsyncIterator[MagicMock]
 
 
 async def test_report_degrades_gracefully_when_the_llm_is_not_configured(
-    client: AsyncClient, auth_headers: dict[str, str]
+    client: AsyncClient, auth_headers: dict[str, str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    assert get_settings().hf_token is None  # the real, current local state - not mocked
+    # A developer may have a real HF_TOKEN in .env; force the unconfigured state explicitly.
+    monkeypatch.setattr(get_settings(), "hf_token", None)
+    get_chat_model.cache_clear()
 
     analysis_id = await _analyze(client, auth_headers)
     response = await client.post(f"/api/v1/analyses/{analysis_id}/report", headers=auth_headers)

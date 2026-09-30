@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     # LLM (Stage 3): optional. Report generation degrades to report=null when unset, rather than
     # the app failing to start - see llm/client.py.
     hf_token: SecretStr | None = None
-    hf_model: str = "openai/gpt-oss-20b"
+    hf_model: str = "openai/gpt-oss-120b"
 
     # Threat intelligence (Stage 4): optional. Degrades to status="unavailable" when unset - see
     # security_analysis_service.py.

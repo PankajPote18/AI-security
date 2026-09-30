@@ -74,9 +74,10 @@ def _mock_threat_intel(request: pytest.FixtureRequest) -> AsyncIterator[MagicMoc
 
 
 async def test_threat_intel_defaults_to_unavailable_when_not_configured(
-    client: AsyncClient, auth_headers: dict[str, str]
+    client: AsyncClient, auth_headers: dict[str, str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    assert get_settings().urlhaus_auth_key is None  # the real, current local state - not mocked
+    # A developer may have a real key in .env; force the unconfigured state explicitly.
+    monkeypatch.setattr(get_settings(), "urlhaus_auth_key", None)
 
     response = await client.post(
         "/api/v1/analyze/url", json={"url": "https://example.com/"}, headers=auth_headers

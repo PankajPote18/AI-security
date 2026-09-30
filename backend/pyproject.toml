@@ -6,10 +6,14 @@ requires-python = ">=3.12,<3.14"
 dependencies = [
     "alembic>=1.13",
     "asyncpg>=0.29",
+    "copilot-mcp",
     "copilot-ml",
     "email-validator>=2.2",
     "fastapi>=0.115",
+    "langchain>=1.0",
+    "langchain-mcp-adapters>=0.3",
     "langchain-openai>=0.2",
+    "langgraph>=0.2",
     "pwdlib[argon2]>=0.2",
     "pydantic-settings>=2.5",
     "pyjwt>=2.9",
@@ -28,6 +32,7 @@ build-backend = "hatchling.build"
 packages = ["app"]
 
 [tool.uv.sources]
+copilot-mcp = { workspace = true }
 copilot-ml = { workspace = true }
 security-core = { workspace = true }
 rag-core = { workspace = true }

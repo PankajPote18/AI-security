@@ -33,6 +33,16 @@ async def get_for_user(
     return result.scalar_one_or_none()
 
 
+async def get_by_id(db: AsyncSession, analysis_id: uuid.UUID) -> Analysis | None:
+    """No `user_id` check - only for internal use by the deep-mode background task, which
+    already knows the exact id it created and runs outside any request/auth context. Never
+    expose this through an API path; use `get_for_user` there."""
+    result = await db.execute(
+        select(Analysis).where(Analysis.id == analysis_id).options(selectinload(Analysis.url))
+    )
+    return result.scalar_one_or_none()
+
+
 async def list_for_user(
     db: AsyncSession, *, user_id: uuid.UUID, limit: int = 20, offset: int = 0
 ) -> list[Analysis]:

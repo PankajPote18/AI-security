@@ -92,7 +92,7 @@ async def run_analysis(db: AsyncSession, *, user_id: uuid.UUID, raw_url: str) ->
         analysis_row.error = str(error)
         analysis_row.steps = [s.model_dump() for s in steps]
         await db.commit()
-        return _to_out(
+        return to_analysis_out(
             analysis_row, url_row.normalized, ml_analysis=None, indicators=[], domain_info=None
         )
 
@@ -149,7 +149,7 @@ async def run_analysis(db: AsyncSession, *, user_id: uuid.UUID, raw_url: str) ->
     indicators = [IndicatorOut(**asdict(i)) for i in security_result.indicators]
     threat_intelligence = [_ti_to_out(t) for t in security_result.threat_intel]
 
-    return _to_out(
+    return to_analysis_out(
         analysis_row, url_row.normalized, ml_analysis, indicators, domain_info, threat_intelligence
     )
 
@@ -201,7 +201,7 @@ async def get_analysis(
     threat_intel_rows = await threat_intel_repo.list_by_url(db, analysis_row.url_id)
     threat_intelligence = [_ti_row_to_out(t) for t in threat_intel_rows]
 
-    return _to_out(
+    return to_analysis_out(
         analysis_row,
         analysis_row.url.normalized,
         ml_analysis,
@@ -233,7 +233,7 @@ def _ti_row_to_out(row: ThreatIntelLookup) -> ThreatIntelOut:
     )
 
 
-def _to_out(
+def to_analysis_out(
     analysis_row: Analysis,
     url_text: str,
     ml_analysis: MlAnalysisOut | None,

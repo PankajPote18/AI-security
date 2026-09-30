@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import uuid
+from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Response, status
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.config import get_settings
@@ -17,7 +18,7 @@ from app.schemas.analysis import (
     FeedbackRequest,
 )
 from app.schemas.report import SecurityReportOut
-from app.services import analysis_service, report_service
+from app.services import analysis_service, deep_analysis_service, report_service
 from app.services.analysis_service import AnalysisNotFoundError
 from app.services.report_service import AnalysisNotCompleteError
 
@@ -27,8 +28,27 @@ router = APIRouter(tags=["analyses"])
 @router.post("/analyze/url", response_model=AnalysisOut)
 @limiter.limit(get_settings().rate_limit_analyze)
 async def analyze_url(
-    request: Request, payload: AnalyzeRequest, user: CurrentUser, db: DbSession
+    request: Request,
+    payload: AnalyzeRequest,
+    user: CurrentUser,
+    db: DbSession,
+    background_tasks: BackgroundTasks,
+    response: Response,
+    mode: Literal["standard", "deep"] = "standard",
 ) -> AnalysisOut:
+    if mode == "deep":
+        try:
+            analysis_out, normalized_url = await deep_analysis_service.start_deep_analysis(
+                db, user_id=user.id, raw_url=payload.url
+            )
+        except ValueError as error:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(error)) from error
+        background_tasks.add_task(
+            deep_analysis_service.run_and_persist_deep_analysis, analysis_out.id, normalized_url
+        )
+        response.status_code = status.HTTP_202_ACCEPTED
+        return analysis_out
+
     try:
         return await analysis_service.run_analysis(db, user_id=user.id, raw_url=payload.url)
     except ValueError as error:
